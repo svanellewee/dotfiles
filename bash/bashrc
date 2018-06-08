@@ -15,6 +15,13 @@ function ts {
     args=$@
     tmux send-keys -t right "$args" C-m
 }
+CTERM="\e[0m"
+GREEN="\e[32m"
+RED="\e[31m"
+BLUE="\e[34m"
 
+PS1="${debian_chroot:+($debian_chroot)}${GREEN}[\A]${CTERM} ${RED}\u${CTERM}@\h:\w\$ "
 ~/dotfiles/bin/tell-me-a-joke
 ~/dotfiles/bin/weather
+
+

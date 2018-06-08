@@ -1,4 +1,11 @@
 #/usr/bin/env bash
+CTERM="\e[0m"
+GREEN="\e[32m"
+RED="\e[31m"
+BLUE="\e[34m"
+CYAN="\e[36m"
+WHITE="\e[37m"
+
 WEATHER_DB=/tmp/weather.db
 if [ ! -f ${WEATHER_DB} ]; then 
  APPID=f3df12a58ab48f203c562e79c17f579a
@@ -23,13 +30,22 @@ GROUP BY DATE(datetime);
 EOF
 fi
 
+function temp-colour() {
+  temp=$1
+  WARM=bc <<<'$temp >= 15.0'
+  if [[ "${WARM}" == 1 ]]; then
+     echo "${RED}"
+  else
+     echo "${CYAN}"
+  fi
+}
 
-sqlite3 ${WEATHER_DB}<<EOF | { IFS='|'; while read -a DATA; do printf "Today's temp should be %.2f-%.2f\n" ${DATA[1]} ${DATA[2]}; done }
+sqlite3 ${WEATHER_DB}<<EOF | { IFS='|'; while read -a DATA; do printf "${WHITE}Today's temp should be %.2f-%.2f${CTERM}\n"  ${DATA[1]} ${DATA[2]}; done }
 SELECT * FROM daily_summaries
 WHERE date(full_date)=date('now');
 EOF
 
-sqlite3 ${WEATHER_DB}<<EOF | { IFS='|'; while read -a DATA; do printf "Tomorrow's temp should be %.2f-%.2f\n" ${DATA[1]} ${DATA[2]}; done }
+sqlite3 ${WEATHER_DB}<<EOF | { IFS='|'; while read -a DATA; do printf "${WHITE}Tomorrow's temp should be %.2f-%.2f${CTERM}\n" ${DATA[1]} ${DATA[2]}; done }
 SELECT * FROM daily_summaries
 WHERE date(full_date)=date('now', '1 days');
 EOF
