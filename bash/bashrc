@@ -15,12 +15,22 @@ function ts {
     args=$@
     tmux send-keys -t right "$args" C-m
 }
-CTERM="\e[0m"
-GREEN="\e[32m"
-RED="\e[31m"
-BLUE="\e[34m"
+#CTERM="\e[0m"
+#GREEN="\e[32m"
+#RED="\e[31m"
+#BLUE="\e[34m"
 
-PS1="${debian_chroot:+($debian_chroot)}${GREEN}[\A]${CTERM} ${RED}\u${CTERM}@\h:\w\$ "
+GREEN="$(tput setaf 2)"
+RED="$(tput setaf 1)"
+BLUE="$(tput setaf 4)"
+CTERM="$(tput sgr0)"
+CYAN="$(tput setaf 6)"
+function _git_branch() {
+   if [[ -d ".git" ]]; then
+      echo "${RED}[`git rev-parse --abbrev-ref HEAD`]${CTERM}"
+   fi
+}
+PS1='${GREEN}[\A]${CTERM} ${CYAN}\u${CTERM}@\h:\w$(_git_branch) \$ '
 ~/dotfiles/bin/tell-me-a-joke
 ~/dotfiles/bin/weather
 
