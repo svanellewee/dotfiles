@@ -15,16 +15,23 @@ function ts {
     args=$@
     tmux send-keys -t right "$args" C-m
 }
-#CTERM="\e[0m"
-#GREEN="\e[32m"
-#RED="\e[31m"
-#BLUE="\e[34m"
+CTERM="\e[0m"
+GREEN="\e[32m"
+RED="\e[31m"
+BLUE="\e[34m"
 
-GREEN="$(tput setaf 2)"
-RED="$(tput setaf 1)"
-BLUE="$(tput setaf 4)"
-CTERM="$(tput sgr0)"
-CYAN="$(tput setaf 6)"
+_c() {
+   echo -e $1
+}
+
+_clr() {
+   echo -e "${CTERM}"
+}
+#GREEN="$(tput setaf 2)"
+#RED="$(tput setaf 1)"
+#BLUE="$(tput setaf 4)"
+#CTERM="$(tput sgr0)"
+#CYAN="$(tput setaf 6)"
 function _git_changes() {
    local CHANGES=$(git diff-index HEAD | wc -l)
    [[ "${CHANGES}" != "0" ]] && echo ": ${CHANGES} changes" 
@@ -32,11 +39,11 @@ function _git_changes() {
 
 function _git_branch() {
    if [[ -d ".git" ]]; then
-      echo "${RED}[`git rev-parse --abbrev-ref HEAD`$(_git_changes)]${CTERM}"
+	   echo " $(_c ${RED})[`git rev-parse --abbrev-ref HEAD`$(_git_changes)]$(_clr)"
    fi
 }
 
-PS1='${GREEN}[\A]${CTERM} ${CYAN}\u${CTERM}@\h:\w$(_git_branch) \$ '
+PS1='$(_c ${GREEN})[\A]${_clr} $(_c ${CYAN})\u$(_clr):\w$(_git_branch) \$ '
 ~/dotfiles/bin/tell-me-a-joke
 ~/dotfiles/bin/weather
 
