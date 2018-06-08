@@ -1,0 +1,3 @@
+MAINSCREEN=${1-HDMI1}
+xrandr --auto
+xrandr --output LVDS1 --below ${MAINSCREEN} 

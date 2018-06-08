@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+DADJOKE_FILE=`date +/tmp/dad_%d%m%y`
+if [ ! -f "${DADJOKE_FILE}" ]; then
+  curl -s -L http://icanhazdadjoke.com > "${DADJOKE_FILE}";
+  xclip -selection c < "${DADJOKE_FILE}"
+fi
+printf "%s...\n" "`cat ${DADJOKE_FILE}`"

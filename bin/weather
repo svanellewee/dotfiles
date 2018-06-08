@@ -1,0 +1,35 @@
+#/usr/bin/env bash
+WEATHER_DB=/tmp/weather.db
+if [ ! -f ${WEATHER_DB} ]; then 
+ APPID=f3df12a58ab48f203c562e79c17f579a
+ echo "datetime,temp,humidity" > /tmp/weather.csv
+ curl -s "api.openweathermap.org/data/2.5/forecast?q=Cape%20Town&units=metric&APPID=${APPID}" |jq '.list[] | "\(.dt_txt),\(.main.temp),\(.main.humidity)"' -r >> /tmp/weather.csv
+
+sqlite3 ${WEATHER_DB} <<EOF
+DROP TABLE IF EXISTS weather;
+.mode csv
+.import /tmp/weather.csv weather
+EOF
+
+sqlite3 ${WEATHER_DB} <<EOF 
+CREATE VIEW IF NOT EXISTS daily_summaries AS
+SELECT DATE(datetime) AS full_date, 
+       MIN(temp) AS min_temp, 
+       MAX(temp) AS max_temp, 
+       MIN(humidity) AS min_humid,
+       MAX(humidity) AS max_humid  
+FROM weather 
+GROUP BY DATE(datetime);
+EOF
+fi
+
+
+sqlite3 ${WEATHER_DB}<<EOF | { IFS='|'; while read -a DATA; do printf "Today's temp should be %.2f-%.2f\n" ${DATA[1]} ${DATA[2]}; done }
+SELECT * FROM daily_summaries
+WHERE date(full_date)=date('now');
+EOF
+
+sqlite3 ${WEATHER_DB}<<EOF | { IFS='|'; while read -a DATA; do printf "Tomorrow's temp should be %.2f-%.2f\n" ${DATA[1]} ${DATA[2]}; done }
+SELECT * FROM daily_summaries
+WHERE date(full_date)=date('now', '1 days');
+EOF
