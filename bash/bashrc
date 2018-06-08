@@ -25,13 +25,20 @@ RED="$(tput setaf 1)"
 BLUE="$(tput setaf 4)"
 CTERM="$(tput sgr0)"
 CYAN="$(tput setaf 6)"
+function _git_changes() {
+   local CHANGES=$(git diff-index HEAD | wc -l)
+   [[ "${CHANGES}" != "0" ]] && echo ": ${CHANGES} changes" 
+}
+
 function _git_branch() {
    if [[ -d ".git" ]]; then
-      echo "${RED}[`git rev-parse --abbrev-ref HEAD`]${CTERM}"
+      echo "${RED}[`git rev-parse --abbrev-ref HEAD`$(_git_changes)]${CTERM}"
    fi
 }
+
 PS1='${GREEN}[\A]${CTERM} ${CYAN}\u${CTERM}@\h:\w$(_git_branch) \$ '
 ~/dotfiles/bin/tell-me-a-joke
 ~/dotfiles/bin/weather
+
 
 

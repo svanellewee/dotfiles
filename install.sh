@@ -1,7 +1,6 @@
 NVIM_TARGET=$HOME/.config/nvim
 [[ ! -L "${NVIM_TARGET}" ]] && ln -s $HOME/dotfiles/nvim/ ${NVIM_TARGET}
 
-
 SOURCE_BASHRC="source ~/dotfiles/bash/bashrc" 
 
 [[ ! -f ~/.bashrc ]] && touch ~/.bashrc
