@@ -47,8 +47,8 @@ function _git_branch() {
 # Remember to use \[ for non printing chars! 
 #  https://unix.stackexchange.com/questions/28827/why-is-my-bash-prompt-getting-bugged-when-i-browse-the-history?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
 PS1='\[$(_c ${GREEN})\][\A]\[${_clr}\] \[$(_c ${CYAN})\]\u\[$(_clr)\]:\w$(_git_branch) \$ '
-~/dotfiles/bin/tell-me-a-joke
-~/dotfiles/bin/weather
+bash ~/dotfiles/bin/tell-me-a-joke
+bash ~/dotfiles/bin/weather
 
 
 
