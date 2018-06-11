@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+if [[ -z $TMPDIR ]]; then
+	TMPDIR=/tmp
+fi
 CTERM="\e[0m"
 CYAN="\e[36m"
 DADJOKE_FILE=`date +${TMPDIR}/dad_%d%m%y`

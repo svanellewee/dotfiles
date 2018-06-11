@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+if [[ -z $TMPDIR ]]; then
+	TMPDIR=/tmp
+fi
 CTERM="\e[0m"
 GREEN="\e[32m"
 RED="\e[31m"
