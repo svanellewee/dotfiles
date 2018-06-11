@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+alias ls='ls --color=auto'
 # Golang
 export GOROOT=/home/stephan/applications/go1.10
 export PATH=$PATH:$GOROOT/bin
@@ -31,8 +31,12 @@ function _clr() {
 }
 
 function _git_changes() {
-   local CHANGES=$(git diff-index HEAD 2>/dev/null| wc -l)
-   [[ "${CHANGES}" != "0" ]] && echo ": ${CHANGES} changes" || echo "" 
+   local CHANGES=$(git diff-index HEAD | wc -l)
+   if [[ "${CHANGES}" != "0" ]] ; then 
+	   echo ": ${CHANGES} changes"
+   else
+	   echo ""
+   fi
 }
 
 function _git_branch() {
