@@ -1,16 +1,19 @@
 #!/usr/bin/env bash
 alias ls='ls --color=auto'
+alias x='exit'
+bind 'set show-all-if-ambiguous on'
+bind 'TAB:menu-complete'
 # Golang
-export GOROOT=/home/stephan/applications/go1.10
-export PATH=$PATH:$GOROOT/bin
-export GOPATH=/home/stephan/source/gopath
-export PATH=$PATH:$GOPATH/bin
+#export GOROOT=/home/stephan/applications/go1.10
+#export PATH=$PATH:$GOROOT/bin
+#export GOPATH=/home/stephan/source/gopath
+#export PATH=$PATH:$GOPATH/bin
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-export PATH=$PATH:/home/stephan/applications/tmux/bin
+#export PATH=$PATH:/home/stephan/applications/tmux/bin
 function ts {
     args=$@
     tmux send-keys -t right "$args" C-m
@@ -41,7 +44,7 @@ function _git_changes() {
 
 function _git_branch() {
    if [[ -d ".git" ]]; then
-	   echo " $(_c ${RED})[$(git rev-parse --abbrev-ref HEAD 2>/dev/null)$(_git_changes)]$(_clr)"
+	   echo "$(_c ${RED})[$(git rev-parse --abbrev-ref HEAD 2>/dev/null)$(_git_changes)]$(_clr)"
    else
 	   echo ""
    fi
@@ -50,7 +53,7 @@ function _git_branch() {
 #alias glogd='git log --oneline --graph --decorate'
 # Remember to use \[ for non printing chars! 
 #  https://unix.stackexchange.com/questions/28827/why-is-my-bash-prompt-getting-bugged-when-i-browse-the-history?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
-PS1='\[$(_c ${GREEN})\][\A]\[${_clr}\] \[$(_c ${CYAN})\]\u\[$(_clr)\]:\w$(_git_branch) \$ '
+PS1='\[$(_c ${GREEN})\][\A]\[${_clr}\]$(_git_branch)\n\[$(_c ${CYAN})\]\u\[$(_clr)\]:\w \$ '
 bash ~/dotfiles/bin/tell-me-a-joke
 bash ~/dotfiles/bin/weather
 
