@@ -1,6 +1,25 @@
 #!/usr/bin/env bash
 alias ls='ls --color=auto'
 alias x='exit'
+alias gommit='git commit -m'
+alias gadd='git add'
+alias gstatus='git status'
+alias gtree='git log --oneline --decorate --graph'
+
+function gfin {
+  set -e
+  echo 'test'
+  echo 'test3'
+  git pull --rebase
+  git rebase -i
+  git push origin master
+  set +e
+}
+
+
+function gbranch {
+	git checkout -b "${1}" origin/master
+}
 bind 'set show-all-if-ambiguous on'
 bind 'TAB:menu-complete'
 # Golang
