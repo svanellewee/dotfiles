@@ -11,8 +11,6 @@ alias gstatus='git status'
 alias gtree='git log --oneline --decorate --graph'
 
 function gfin {
-  echo 'test'
-  echo 'test3'
   git pull --rebase
   git rebase -i
   git push origin HEAD:master
