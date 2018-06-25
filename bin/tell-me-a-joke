@@ -7,7 +7,7 @@ CYAN="\e[36m"
 DADJOKE_FILE=`date +${TMPDIR}/dad_%d%m%y`
 if [ ! -f "${DADJOKE_FILE}" ]; then
   curl -s -L http://icanhazdadjoke.com > "${DADJOKE_FILE}";
-  which xclip
-  [[ HASXCLIP == 0 ]] && xclip -selection c < "${DADJOKE_FILE}"
+  which xclip 1>/dev/null
+  [[ $? == 0 ]] && xclip -selection c < "${DADJOKE_FILE}"
 fi
 printf "${CYAN}%s${CTERM}\n" "`cat ${DADJOKE_FILE}`"

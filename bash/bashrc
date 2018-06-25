@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+alias l='ls -CF'
+alias la='ls -A'
+alias ll='ls -hlart'
 alias ls='ls --color=auto'
 alias x='exit'
 alias gommit='git commit -m'
@@ -22,6 +25,7 @@ function gbranch {
 }
 bind 'set show-all-if-ambiguous on'
 bind 'TAB:menu-complete'
+
 # Golang
 #export GOROOT=/home/stephan/applications/go1.10
 #export PATH=$PATH:$GOROOT/bin
