@@ -11,21 +11,19 @@ alias gstatus='git status'
 alias gtree='git log --oneline --decorate --graph'
 
 function gfin {
-  set -e
   echo 'test'
   echo 'test3'
   git pull --rebase
   git rebase -i
   git push origin HEAD:master
-  set +e
 }
 
 function gbranch {
 	git checkout -b "${1}" origin/master
 }
 
-bind 'set show-all-if-ambiguous on'
-bind 'TAB:menu-complete'
+#bind 'set show-all-if-ambiguous on'
+#bind 'TAB:menu-complete'
 
 # Golang
 #export GOROOT=/home/stephan/applications/go1.10
@@ -33,15 +31,10 @@ bind 'TAB:menu-complete'
 #export GOPATH=/home/stephan/source/gopath
 #export PATH=$PATH:$GOPATH/bin
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+#export NVM_DIR="$HOME/.nvm"
+#[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+#[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-#export PATH=$PATH:/home/stephan/applications/tmux/bin
-function ts {
-    args=$@
-    tmux send-keys -t right "$args" C-m
-}
 
 CTERM="\e[0m"
 GREEN="\e[32m"
@@ -50,15 +43,16 @@ BLUE="\e[34m"
 CYAN="\e[36m"
 
 function _c() {
-   echo -e $1
+   echo -e "$1"
 }
 
 function _clr() {
    echo -e "${CTERM}"
 }
 
-function _git_changes() {
-   local CHANGES=$(git diff-index HEAD | wc -l)
+function _sve_git_changes() {
+   local CHANGES
+   CHANGES="$(git diff-index HEAD | wc -l)"
    if [[ "${CHANGES}" != "0" ]] ; then 
 	   echo ": ${CHANGES} changes"
    else
@@ -66,18 +60,23 @@ function _git_changes() {
    fi
 }
 
-function _git_branch() {
-   if [[ -d ".git" ]]; then
-	   echo "$(_c ${RED})[$(git rev-parse --abbrev-ref HEAD 2>/dev/null)$(_git_changes)]$(_clr)"
-   else
-	   echo ""
-   fi
+function _sve_git_branch() {
+	local BRANCH_NAME
+	BRANCH_NAME="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
+	if [[ -n "${BRANCH_NAME}" ]]; then
+		echo "[$(_c "${RED}")${BRANCH_NAME}$(_sve_git_changes)$(_clr)]"
+
+	else
+		echo ""
+	fi
 }
 
 #alias glogd='git log --oneline --graph --decorate'
 # Remember to use \[ for non printing chars! 
 #  https://unix.stackexchange.com/questions/28827/why-is-my-bash-prompt-getting-bugged-when-i-browse-the-history?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
-PS1='\[$(_c ${GREEN})\][\A]\[$(_clr)\]$(_git_branch)\n\[$(_c ${CYAN})\]\u\[$(_clr)\]:\w \$ '
+PS1='\[$(_c "${GREEN}")\][\A]\[$(_clr)\]$(_sve_git_branch)\n\[$(_c "${CYAN}")\]\u\[$(_clr)\]:\w \$ '
+#PS1='\[$(_c "${GREEN}")\][\A]\[$(_clr)\]$(_git_branch)\n\[$(_c "${CYAN}")\]\u\[$(_clr)\]:\w \$ '
+#PS1='\A\n\u:\w \$ '
 bash ~/dotfiles/bin/tell-me-a-joke
 bash ~/dotfiles/bin/weather
 
