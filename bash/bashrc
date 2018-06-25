@@ -4,6 +4,7 @@ alias la='ls -A'
 alias ll='ls -hlart'
 alias ls='ls --color=auto'
 alias x='exit'
+
 alias gommit='git commit -m'
 alias gadd='git add'
 alias gstatus='git status'
@@ -15,14 +16,14 @@ function gfin {
   echo 'test3'
   git pull --rebase
   git rebase -i
-  git push origin master
+  git push origin HEAD:master
   set +e
 }
-
 
 function gbranch {
 	git checkout -b "${1}" origin/master
 }
+
 bind 'set show-all-if-ambiguous on'
 bind 'TAB:menu-complete'
 
@@ -76,7 +77,7 @@ function _git_branch() {
 #alias glogd='git log --oneline --graph --decorate'
 # Remember to use \[ for non printing chars! 
 #  https://unix.stackexchange.com/questions/28827/why-is-my-bash-prompt-getting-bugged-when-i-browse-the-history?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
-PS1='\[$(_c ${GREEN})\][\A]\[${_clr}\]$(_git_branch)\n\[$(_c ${CYAN})\]\u\[$(_clr)\]:\w \$ '
+PS1='\[$(_c ${GREEN})\][\A]\[$(_clr)\]$(_git_branch)\n\[$(_c ${CYAN})\]\u\[$(_clr)\]:\w \$ '
 bash ~/dotfiles/bin/tell-me-a-joke
 bash ~/dotfiles/bin/weather
 
