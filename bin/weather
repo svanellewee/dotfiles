@@ -35,20 +35,20 @@ fi
 
 function temp-colour() {
   temp=$1
-  WARM=bc <<<'$temp >= 15.0'
+  WARM=$(bc <<<"${temp} > 15.0")
   if [[ "${WARM}" == 1 ]]; then
-     echo "${RED}"
+     echo -e "${RED}"
   else
-     echo "${CYAN}"
+     echo -e "${CYAN}"
   fi
 }
 
-sqlite3 ${WEATHER_DB}<<EOF | { IFS='|'; while read -a DATA; do printf "${WHITE}Today's temp should be %.2f-%.2f${CTERM}\n"  ${DATA[1]} ${DATA[2]}; done }
+sqlite3 ${WEATHER_DB}<<EOF | { IFS='|'; while read -a DATA; do printf "${WHITE}Today's temp should be $(temp-colour ${DATA[1]})%.2f${CTERM}-$(temp-colour ${DATA[2]})%.2f${CTERM}\n"  ${DATA[1]} ${DATA[2]}; done }
 SELECT * FROM daily_summaries
 WHERE date(full_date)=date('now');
 EOF
 
-sqlite3 ${WEATHER_DB}<<EOF | { IFS='|'; while read -a DATA; do printf "${WHITE}Tomorrow's temp should be %.2f-%.2f${CTERM}\n" ${DATA[1]} ${DATA[2]}; done }
+sqlite3 ${WEATHER_DB}<<EOF | { IFS='|'; while read -a DATA; do printf "${WHITE}Tomorrow's temp should be $(temp-colour ${DATA[1]})%.2f${CTERM}-$(temp-colour ${DATA[2]})%.2f${CTERM}\n"  ${DATA[1]} ${DATA[2]}; done }
 SELECT * FROM daily_summaries
 WHERE date(full_date)=date('now', '1 days');
 EOF

@@ -1,0 +1,84 @@
+TEMP_FILE=$(mktemp /tmp/XXXXX)
+curl 'http://niwis.dws.gov.za/niwis2/api/Request/SurfaceWaterStorageTableData?areaKey=%2Fnational%2FWMA2012' | jq -r '(map(keys) | add | unique) as $cols | map(. as $row | $cols | map($row[.])) as $rows | $cols, $rows[] | @csv' > ${TEMP_FILE} 
+
+
+DB_FILE=/tmp/hackdamns.db
+#rm -fr ${DB_FILE}
+TEMP_TABLE=damndata_$(date +%d%m%Y_%H%M%S)
+sqlite3 ${DB_FILE} <<EOF
+.mode csv
+.separator ,
+CREATE TABLE IF NOT EXISTS damndata(
+  "area_fsc" TEXT,
+  "area_id" TEXT,
+  "area_key" TEXT,
+  "area_name" TEXT,
+  "area_pc_fsc" TEXT,
+  "area_pc_zone" TEXT,
+  "area_waterindam" TEXT,
+  "dam_fsc" TEXT,
+  "dam_pc_fsc" TEXT,
+  "dam_pc_sediment" TEXT,
+  "dam_pc_zone" TEXT,
+  "dam_waterindam" TEXT,
+  "id" TEXT,
+  "nat_fsc" TEXT,
+  "nat_pc_fsc" TEXT,
+  "nat_pc_zone" TEXT,
+  "nat_waterindam" TEXT,
+  "national" TEXT,
+  "reservoir" TEXT,
+  "station" TEXT,
+  "valuedate" TEXT
+);
+CREATE UNIQUE INDEX IF NOT EXISTS reservoir_valuedate ON damndata(reservoir, valuedate);
+.import ${TEMP_FILE} ${TEMP_TABLE}
+
+INSERT INTO damndata 
+SELECT * FROM ${TEMP_TABLE};
+EOF
+
+
+#echo -e ".mode csv\n.separator ' '\n.width 25\nselect reservoir || ' has ' || level ,  ' percent left, measured at ' || measured_date from (select reservoir, cast(dam_pc_fsc as float) as level, date(valuedate) as measured_date from damndata order by level asc, valuedate desc limit 10) xx;" | sqlite3 /tmp/hackdamns.db | sed 's/"//g' > /tmp/results.txt
+#select valuedate, rea_name, reservoir, dam_pc_fsc from damndata order by valuedate desc limit 100;
+
+#cat <<EOF | sqlite3 /tmp/hackdamns.db > /tmp/results.txt 
+#select  reservoir || ' has ' || level ||  ' percent left, measured at ' || measured_date 
+#from (select reservoir, cast(dam_pc_fsc as float) as level,
+#             date(valuedate) as measured_date 
+#      from damndata 
+#      order by level asc, valuedate desc limit 10) xx;
+#EOF
+
+cat<<EOF | sqlite3 /tmp/hackdamns.db > /tmp/results.txt
+.mode columns
+.headers on
+.width 30, 30
+DROP VIEW IF EXISTS current_differences;
+CREATE VIEW current_differences AS
+SELECT area_id, reservoir, current_dam_level, value_date, difference FROM (
+       SELECT  a.area_id, a.reservoir, 
+               a.dam_pc_fsc AS previous_dam_level, b.dam_pc_fsc AS current_dam_level,
+               b.dam_pc_fsc - a.dam_pc_fsc AS  difference,
+               a.valuedate, b.valuedate AS value_date
+       FROM damndata a, damndata b
+       WHERE a.valuedate < b.valuedate AND b.reservoir=a.reservoir 
+       ORDER BY  a.dam_pc_fsc ASC, a.valuedate ASC, b.valuedate ASC
+) xx 
+GROUP BY reservoir
+ORDER BY area_id, difference asc;
+EOF
+
+
+cat<<EOF |sqlite3 /tmp/hackdamns.db
+.headers on
+.mode columns
+SELECT reservoir, dam_fsc, dam_pc_fsc 
+FROM damndata 
+WHERE reservoir LIKE '%vlei%' OR reservoir LIKE '%thee%' 
+OR reservoir LIKE '%ras%';
+EOF
+
+#https://www.westerncape.gov.za/general-publication/latest-western-cape-dam-levels
+
+#https://resource.capetown.gov.za/documentcentre/Documents/City%20research%20reports%20and%20review/damlevels.pdf

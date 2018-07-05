@@ -32,9 +32,6 @@ TMUX_PATH="/home/stephan/applications/tmux/bin/"
 if [[ -d "${TMUX_PATH}" ]]; then
 	PATH=$PATH:${TMUX_PATH}
 fi
-#export NVM_DIR="$HOME/.nvm"
-#[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-#[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 
 CTERM="\e[0m"
@@ -72,14 +69,9 @@ function _sve_git_branch() {
 	fi
 }
 
-#alias glogd='git log --oneline --graph --decorate'
 # Remember to use \[ for non printing chars! 
 #  https://unix.stackexchange.com/questions/28827/why-is-my-bash-prompt-getting-bugged-when-i-browse-the-history?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
 PS1='\[$(_c "${GREEN}")\][\A]\[$(_clr)\]$(_sve_git_branch)\n\[$(_c "${CYAN}")\]\u\[$(_clr)\]:\w \$ '
-#PS1='\[$(_c "${GREEN}")\][\A]\[$(_clr)\]$(_git_branch)\n\[$(_c "${CYAN}")\]\u\[$(_clr)\]:\w \$ '
-#PS1='\A\n\u:\w \$ '
-bash ~/dotfiles/bin/tell-me-a-joke
-bash ~/dotfiles/bin/weather
 
 
 
