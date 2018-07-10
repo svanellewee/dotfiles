@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+function hex-to-ip () { 
+    input_string=$1;
+    v=();
+    for ((i="${#input_string}" - 2; i>=0; i-=2))
+    do
+        printf -v chunk "%0.2d" "0x${input_string[@]:$i:2}";
+        v+=("$chunk");
+    done;
+    ( IFS=.;
+    echo "${v[*]}" )
+}
+
+cat /proc/net/tcp | { 
+    while read -a stuff; do 
+        printf "%s:%d - %s:%d\n" \
+            "$(hex-to-ip ${stuff[1]%%:*})" \
+            "0x${stuff[1]##*:}" \
+            "$(hex-to-ip ${stuff[2]%%:*})" \
+            "0x${stuff[2]##*:}"; 
+    done 
+}
+#with open('/proc/net/tcp', 'r') as tcpfile:
+#   data = tcpfile.readlines()
+
+#def convert(addr):
+#    hex_ip, hex_port = addr.split(":")
+#    hex_ip_args = [hex_ip[i:i+2] for i in range(0, len(hex_ip), 2)]
+#    ip = ".".join(["%0.2d" % int(x, 16) for x in hex_ip_args[::-1]])
+#    port = int(hex_port, 16)
+#    return "%s:%s" % (ip, port)
+#
+#for datum in data[1:]:
+#    vals = datum.split()
+#    local, remote = vals[1], vals[2]
+#    print "{} -> {}".format(convert(local), convert(remote))
+
