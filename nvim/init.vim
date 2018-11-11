@@ -5,6 +5,13 @@ set history=50        " keep 50 lines of command line history
 set ruler                " show the cursor position all the time
 set showcmd                " display incomplete commands
 set incsearch                " do incremental searching
+
+" funky crosshairs
+"highlight CursorLine   cterm=NONE ctermbg=white ctermfg=NONE guibg=black guifg=NONE 
+"set cursorline
+
+"set cursorcolumn
+set number
 syntax on
 
 
@@ -17,7 +24,7 @@ call plug#begin('~/.local/share/nvim/plugged')
 
 " Shorthand notation; fetches https://github.com/junegunn/vim-easy-align
 Plug 'junegunn/vim-easy-align'
-Plug 'airblade/vim-gitgutter'
+"Plug 'airblade/vim-gitgutter'
 Plug 'https://github.com/tpope/vim-fugitive.git'
 Plug 'https://github.com/tpope/vim-rhubarb.git'
 Plug 'fatih/vim-go'
@@ -46,7 +53,12 @@ Plug 'elmcast/elm-vim'
 " Unmanaged plugin (manually installed and updated)
 " Plug '~/my-prototype-plugin'
 
-Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': './install.sh' }
+" Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': './install.sh' }
+
+Plug 'autozimu/LanguageClient-neovim', {
+    \ 'branch': 'next',
+    \ 'do': 'bash install.sh',
+    \ }
 
 " (Optional) Multi-entry selection UI.
 Plug 'junegunn/fzf'
@@ -61,7 +73,20 @@ Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 
 call plug#end()
 
-let g:LanguageClient_serverCommands = {'python': ['/home/stephan/source/python-language-server/venv/bin/pyls']}
+" let g:LanguageClient_serverCommands = {'python': ['/home/stephan/source/python-language-server/venv/bin/pyls -v']}
+let g:LanguageClient_serverCommands = {
+			\ 'rust': ['~/.cargo/bin/rustup', 'run', 'stable', 'rls'],
+			\ 'python': ['/home/stephan/bin/pyls', '--verbose', '--log-file', '/tmp/pyls-log.log'],
+			\ 'go' : ['/home/stephan/source/gopath/bin/go-langserver']
+			\}
+
+nnoremap <silent> K :call LanguageClient#textDocument_hover()<CR>
+nnoremap <silent> gd :call LanguageClient#textDocument_definition()<CR>
+nnoremap <silent> <F2> :call LanguageClient#textDocument_rename()<CR>
+
+let g:rustfmt_autosave = 1
+let g:rustfmt_command = 'rustup run stable rustfmt'
+
 set hidden
 let g:racer_cmd = "/home/stephan/.cargo/bin/racer"
 let g:racer_experimental_completer = 1

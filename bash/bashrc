@@ -20,14 +20,24 @@ function gbranch {
 	git checkout -b "${1}" origin/master
 }
 
+function fork-repo() {
+	local e="${1##*/}"
+	local repodir="${e%%.git}"
+	git clone "${1}"
+	cd "${repo_dir}"
+	git config user.name svanellewee
+	git config user.email stephan.van.ellewee@gmail.com
+	git remote add upstream "${2}"
+}
+
 #bind 'set show-all-if-ambiguous on'
 #bind 'TAB:menu-complete'
 
 # Golang
-#export GOROOT=/home/stephan/applications/go1.10
-#export PATH=$PATH:$GOROOT/bin
-#export GOPATH=/home/stephan/source/gopath
-#export PATH=$PATH:$GOPATH/bin
+export GOROOT=/home/stephan/applications/go
+export PATH=$PATH:$GOROOT/bin
+export GOPATH=/home/stephan/source/gopath
+export PATH=$PATH:$GOPATH/bin
 TMUX_PATH="/home/stephan/applications/tmux/bin/" 
 if [[ -d "${TMUX_PATH}" ]]; then
 	PATH=$PATH:${TMUX_PATH}
@@ -73,5 +83,13 @@ function _sve_git_branch() {
 #  https://unix.stackexchange.com/questions/28827/why-is-my-bash-prompt-getting-bugged-when-i-browse-the-history?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
 PS1='\[$(_c "${GREEN}")\][\A]\[$(_clr)\]$(_sve_git_branch)\n\[$(_c "${CYAN}")\]\u\[$(_clr)\]:\w \$ '
 
+# Taken from https://www.digitalocean.com/community/tutorials/how-to-use-bash-history-commands-and-expansions-on-a-linux-vps
+HISTSIZE=5000
+HISTFILESIZE=10000
+shopt -s histappend
+# append history, clear history file and re-read history
+export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"  
 
-
+function l33t() {
+	echo "${1}" | tr -t 'aeio' '@310'
+}

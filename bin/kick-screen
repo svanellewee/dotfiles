@@ -1,3 +1,3 @@
 MAINSCREEN=${1-HDMI1}
 xrandr --auto
-xrandr --output LVDS1 --below ${MAINSCREEN} 
+xrandr --output LVDS1 --below ${MAINSCREEN} --size 1920x1080
