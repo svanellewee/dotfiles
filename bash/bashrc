@@ -91,5 +91,22 @@ shopt -s histappend
 export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"  
 
 function l33t() {
-	echo "${1}" | tr -t 'aeio' '@310'
+	echo "${1}" | tr -t 'aeio' '4310'
+}
+
+function newbash() {
+	local input_filename="${1}"
+	echo '#!/usr/bin/env bash' > "${input_filename}"
+	chmod a+x "${input_filename}"
+}
+
+function new-c() {
+	local input_filename="${1}"
+	cat <<- "EOF" > "${input_filename}".c
+	#include <stdio.h>
+	int main(int argc, char* argv[]) {
+	    printf("Hello world\n");
+	    return 0;
+	}
+	EOF
 }
