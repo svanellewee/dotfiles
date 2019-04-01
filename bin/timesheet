@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+if [[ -z $TMPDIR ]]; then
+        TMPDIR=/tmp
+fi
+TIMESHEET_DB=$HOME/.timesheet_db
+
+timesheet-init() {
+   sqlite3 "${TIMESHEET_DB}" <<- EOF
+	CREATE TABLE IF NOT EXISTS entry (
+	   entry_id INTEGER PRIMARY KEY AUTOINCREMENT,
+	   timestamp DATETIME DEFAULT(datetime('now','localtime')),
+	   topic VARCHAR,
+	   note VARCHAR
+	);
+	CREATE TABLE IF NOT EXISTS tag (
+	   tag_id INTEGER PRIMARY KEY AUTOINCREMENT,
+	   name VARCHAR,
+	   entry_id INTEGER,
+	   FOREIGN KEY(entry_id) REFERENCES entry(entry_id)
+	);
+	EOF
+}
+
+TMPWORKDAY=${TMPDIR}/workday
+timesheet-workday-start() {
+   local end_of_day="${1:-14h50}"
+   if [[ ! -f "${TMPWORKDAY}" ]]; then
+      at "${end_of_day}" <<- EOF
+	notify-send 'Go home' --icon=dialog-warning
+	rm ${TMPWORKDAY}
+	EOF
+      touch "${TMPWORKDAY}"
+   fi
+}
+
+timesheet-entry() {
+    local topic="$1"
+    local entry="${2}"
+    shift 2
+    local tags=("${@}")
+    sqlite3 "${TIMESHEET_DB}" <<- EOF
+	  INSERT INTO entry(topic, note)
+	  VALUES ("${topic}", "${entry}");
+	EOF
+    entry_id=$(sqlite3 "${TIMESHEET_DB}" 'SELECT max(entry_id) FROM entry')
+    for tag in "${tags[@]}"; do
+	    sqlite3 "${TIMESHEET_DB}" "INSERT INTO tag (entry_id, name) VALUES ($entry_id, '${tag}');"
+    done
+    timesheet-workday-start
+}
+
+timesheet-summary() {
+    sqlite3 "${TIMESHEET_DB}" <<- EOF
+	.headers on
+	.mode columns
+	.width 20 20 50
+	WITH entries AS (
+		SELECT entry_id, timestamp, topic,  note
+		FROM entry
+	),
+	tags AS (
+		SELECT entry_id, group_concat(name) names
+		FROM tag
+		GROUP BY entry_id
+	)
+	SELECT e.timestamp AS 'When', e.topic AS  'Topic', e.note AS 'Note', t.names AS 'Tags' FROM
+	entries e LEFT OUTER JOIN tags t WHERE e.entry_id=t.entry_id;
+	EOF
+}
+
+timesheet-init
