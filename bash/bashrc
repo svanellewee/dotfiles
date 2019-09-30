@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+export EDITOR=nvim
 alias l='ls -CF'
 alias la='ls -A'
 alias ll='ls -hlart'
@@ -34,8 +35,8 @@ function fork-repo() {
 #bind 'TAB:menu-complete'
 
 # Golang
-export GOROOT=/home/stephan/applications/go
-export PATH=$PATH:$GOROOT/bin
+#export GOROOT=/home/stephan/applications/go
+#export PATH=$PATH:$GOROOT/bin
 export GOPATH=/home/stephan/source/gopath
 export PATH=$PATH:$GOPATH/bin
 TMUX_PATH="/home/stephan/applications/tmux/bin/" 
@@ -88,7 +89,7 @@ HISTSIZE=5000
 HISTFILESIZE=10000
 shopt -s histappend
 # append history, clear history file and re-read history
-export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"  
+export PROMPT_COMMAND="history -a; history -c; history -r;$PROMPT_COMMAND"  
 
 function l33t() {
 	echo "${1}" | tr -t 'aeio' '4310'
@@ -110,3 +111,4 @@ function new-c() {
 	}
 	EOF
 }
+PATH=${PATH}:/var/lib/snapd/snap/bin

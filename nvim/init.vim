@@ -1,99 +1,54 @@
-set guicursor=
-colorscheme delek
-set backspace=indent,eol,start
-set history=50        " keep 50 lines of command line history
-set ruler                " show the cursor position all the time
-set showcmd                " display incomplete commands
-set incsearch                " do incremental searching
-set cindent
-set autoindent
-set shiftwidth=4
-set expandtab
-" funky crosshairs
-"highlight CursorLine   cterm=NONE ctermbg=white ctermfg=NONE guibg=black guifg=NONE 
-"set cursorline
+let deoplete#sources#jedi#python_path = '/home/stephan/applications/venv3/bin/python'
+let g:python3_host_prog = '/home/stephan/applications/venv3/bin/python'
+let g:python_host_prog = '/home/stephan/applications/venv2/bin/python'
+" let g:loaded_python_provider = 0
+" let g:loaded_python3_provider = 0
 
-"set cursorcolumn
-set number
-syntax on
-
-
-" Specify a directory for plugins
-" - For Neovim: ~/.local/share/nvim/plugged
-" - Avoid using standard Vim directory names like 'plugin'
 call plug#begin('~/.local/share/nvim/plugged')
-
-" Make sure you use single quotes
-
-" Shorthand notation; fetches https://github.com/junegunn/vim-easy-align
-Plug 'junegunn/vim-easy-align'
-"Plug 'airblade/vim-gitgutter'
-Plug 'https://github.com/tpope/vim-fugitive.git'
-Plug 'https://github.com/tpope/vim-rhubarb.git'
-Plug 'fatih/vim-go'
-Plug 'https://github.com/mxw/vim-jsx.git'
-Plug 'https://github.com/pangloss/vim-javascript.git'
-Plug 'racer-rust/vim-racer'
-Plug 'rust-lang/rust.vim'
-Plug 'elmcast/elm-vim'
-" Any valid git URL is allowed
-" Plug 'https://github.com/junegunn/vim-github-dashboard.git'
-" :q
-"
-
-" Multiple Plug commands can be written in a single line using | separators
-" Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
-
-" On-demand loading
-" Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
-
-" Using a non-master branch
-" Plug 'rdnetto/YCM-Generator', { 'branch': 'stable' }
-
-" Using a tagged release; wildcard allowed (requires git 1.9.2 or above)
-" Plug 'fatih/vim-go', { 'tag': '*' }
-
-" Unmanaged plugin (manually installed and updated)
-" Plug '~/my-prototype-plugin'
-
-" Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': './install.sh' }
-
 Plug 'autozimu/LanguageClient-neovim', {
     \ 'branch': 'next',
     \ 'do': 'bash install.sh',
     \ }
-
 " (Optional) Multi-entry selection UI.
 Plug 'junegunn/fzf'
-
-" (Completion plugin option 1)
-" Plug 'roxma/nvim-completion-manager'
-" (Completion plugin option 2)
+Plug 'sbdchd/neoformat'
+Plug 'scrooloose/nerdtree'
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-
-" Inatialize plugin system
-
-
+" Plug 'davidhalter/jedi-vim'
+" Plug 'zchee/deoplete-jedi'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'jiangmiao/auto-pairs'
+Plug 'fatih/vim-go', {'do': ':GoUpdateBinaries' }
 call plug#end()
 
-" let g:LanguageClient_serverCommands = {'python': ['/home/stephan/source/python-language-server/venv/bin/pyls -v']}
 let g:LanguageClient_serverCommands = {
-			\ 'rust': ['~/.cargo/bin/rustup', 'run', 'stable', 'rls'],
-			\ 'python': ['/home/stephan/bin/pyls', '--verbose', '--log-file', '/tmp/pyls-log.log'],
-			\ 'go' : ['/home/stephan/source/gopath/bin/go-langserver']
-			\}
+    \ 'python': ['/home/stephan/applications/venv3/bin/pyls'],
+    \ }
 
+let g:deoplete#enable_at_startup = 1
+" let g:airline_theme='violet'
+" Enable alignment
+let g:neoformat_basic_format_align = 1
+
+" Enable tab to spaces conversion
+let g:neoformat_basic_format_retab = 1
+
+" Enable trimmming of trailing whitespace
+let g:neoformat_basic_format_trim = 1
+
+let g:neoformat_python_yapf = {
+        \ 'exe': '/home/stephan/applications/venv3/bin/yapf',
+        \ 'args': ['--style google']
+        \ }
+let g:neoformat_enabled_python = ['yapf']
+
+
+nnoremap <F5> :call LanguageClient_contextMenu()<CR>
+" Or map each action separately
 nnoremap <silent> K :call LanguageClient#textDocument_hover()<CR>
 nnoremap <silent> gd :call LanguageClient#textDocument_definition()<CR>
 nnoremap <silent> <F2> :call LanguageClient#textDocument_rename()<CR>
-
-let g:rustfmt_autosave = 1
-let g:rustfmt_command = 'rustup run stable rustfmt'
-
-set hidden
-let g:racer_cmd = "/home/stephan/.cargo/bin/racer"
-let g:racer_experimental_completer = 1
-au FileType rust nmap gd <Plug>(rust-def)
-au FileType rust nmap gs <Plug>(rust-def-split)
-au FileType rust nmap gx <Plug>(rust-def-vertical)
-au FileType rust nmap <leader>gd <Plug>(rust-doc)
+let g:LanguageClient_loggingLevel = 'INFO'
+let g:LanguageClient_loggingFile =  expand('~/.local/share/nvim/LanguageClient.log')
+let g:LanguageClient_serverStderr = expand('~/.local/share/nvim/LanguageServer.log')
