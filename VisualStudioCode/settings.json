@@ -1,7 +1,17 @@
 {
-    "workbench.sideBar.location": "right",
-    "workbench.colorTheme": "Hopscotch (TextMate Theme)",
-    "zenMode.centerLayout": false,
+    // Python
+    "[python]": {
+      "editor.rulers": [
+        100
+      ],
+      "editor.links": false,
+    },
+    "python.linting.pylintEnabled": true,
+    "python.formatting.provider": "yapf",
+    "python.formatting.yapfArgs": ["--style", "{column_limit: 99}"],
+    "python.pythonPath": "~/applications/venv3/bin/python",
+    "autoDocstring.docstringFormat": "google",
+  
     // Bash
     "shellcheck.enable": true,
     "shellcheck.run": "onSave",
@@ -10,6 +20,42 @@
     "shellcheck.customArgs": [],
     "shellcheck.ignorePatterns": {},
     "shellcheck.useWSL": false,
-    "python.jediEnabled": false,
-    "editor.renderWhitespace": "all"
-}
+    
+    // Excluded Files
+    "files.exclude": {
+      "**/.git": true,
+      "**/.svn": true,
+      "**/.hg": true,
+      "**/CVS": true,
+      "**/.DS_Store": true,
+      "**/.vscode": true,
+      "**/.pytest_cache": true,
+      "**/*egg-info": true,
+      "**/*eggs": true,
+      "**/.coverage": true,
+      "**/__pycache__": true,
+      "**/*.pyc": true,
+      "**/build": true,
+      "**/dist": true
+    },
+  
+    // GO
+    "go.autocompleteUnimportedPackages": true,
+  
+    
+    // VSCode
+    "breadcrumbs.enabled": true,
+    "diffEditor.ignoreTrimWhitespace": false,
+    "window.zoomLevel": -1,
+    "workbench.editor.highlightModifiedTabs": true,
+    "workbench.iconTheme": "material-icon-theme",
+    "workbench.sideBar.location": "right",
+    "zenMode.centerLayout": false,
+    "editor.renderWhitespace": "all",
+    "editor.multiCursorModifier": "ctrlCmd",
+    "editor.minimap.enabled": false,
+    "go.useLanguageServer": true,
+  
+    
+  }
+  
