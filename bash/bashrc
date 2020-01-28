@@ -111,4 +111,27 @@ function new-c() {
 	}
 	EOF
 }
+
+function new-go() {
+	local project_name="${1}"
+	mkdir -p ./"${project_name}"
+	cd "${project_name}"
+	go mod init "${project_name}"
+	cat <<- "EOF" > ./main.go
+	package main
+	import "fmt"
+	func main() {
+		fmt.Println("Hiya")
+	}
+	EOF
+	go fmt main.go
+}
+function get-ip-for() {
+	local iface="${1:-wlp2s0}"
+        ip addr show dev "${iface}" | grep -Po "inet \K[0-9\.]+"
+}
+
 PATH=${PATH}:/var/lib/snapd/snap/bin
+PATH=${PATH}:/home/stephan/applications/venv3/bin
+ANDROID_SDK=/home/stephan/Android/Sdk/
+PATH=${PATH}:${ANDROID_SDK}/emulator:${ANDROID_SDK}/tools
