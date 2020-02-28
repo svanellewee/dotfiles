@@ -1,5 +1,6 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhistcnt =7
+let g:netrw_dirhistcnt =8
+let g:netrw_dirhist_8='/home/stephan/source/gopath/src/google.golang.org/grpc/examples/helloworld/helloworld'
 let g:netrw_dirhist_7='/home/stephan/entersekt/gogoload/scenarios'
 let g:netrw_dirhist_6='/home/stephan/entersekt/gogoload'
 let g:netrw_dirhist_5='/home/stephan/entersekt/gogoload/core'
@@ -9,4 +10,3 @@ let g:netrw_dirhist_2='/home/stephan/entersekt/ekp-go-reference-project/chart/ek
 let g:netrw_dirhist_1='/home/stephan/entersekt/ekp-go-reference-project/chart/ekp-go-reference-project/templates'
 let g:netrw_dirhist_0='/home/stephan/source/yugabyte-operator/deploy/crds'
 let g:netrw_dirhist_9='/home/stephan/entersekt/yugabyte-operator/deploy/crds'
-let g:netrw_dirhist_8='/home/stephan/entersekt'
