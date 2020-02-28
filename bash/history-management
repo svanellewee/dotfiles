@@ -31,7 +31,3 @@ function history-export() {
 }
 
 
-function read-shit() {
-	read -r -d '' a
-	echo "...${a}"
-}
