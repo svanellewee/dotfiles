@@ -3,7 +3,11 @@ mkdir -p ~/.bash_logs
 HISTORY_DB="${1:-${HOME}/.bash_logs/history.db}"
 function history-init() {
 	sqlite3 "${HISTORY_DB}" <<- "EOF"
-	CREATE TABLE IF NOT EXISTS entry (entry_id INTEGER, time TIMESTAMP, VALUE VARCHAR);
+	CREATE TABLE IF NOT EXISTS entry (
+	  entry_id INTEGER,
+	  time TIMESTAMP,
+	  VALUE VARCHAR
+	);
 	EOF
 }
 
@@ -26,7 +30,7 @@ function history-list() {
 
 function history-export() {
 	sqlite3 "${HISTORY_DB}" <<- EOF
-	SELECT value FROM entry ORDER BY entry_id DESC
+	SELECT value FROM entry ORDER BY rowid ASC
 	EOF
 }
 
