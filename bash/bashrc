@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+
+source $HOME/dotfiles/bash/history-management
 export EDITOR=nvim
 alias l='ls -CF'
 alias la='ls -A'
@@ -87,10 +89,25 @@ PS1='\[$(_c "${GREEN}")\][\A]\[$(_clr)\]$(_sve_git_branch)\n\[$(_c "${CYAN}")\]\
 # Taken from https://www.digitalocean.com/community/tutorials/how-to-use-bash-history-commands-and-expansions-on-a-linux-vps
 HISTSIZE=5000
 HISTFILESIZE=10000
-shopt -s histappend
-# append history, clear history file and re-read history
-export PROMPT_COMMAND="history -a; history -c; history -r;$PROMPT_COMMAND"  
+#HISTTIMEFORMAT="%F %T "
+history-init
+function history-store() {
+	# Borrowed and adapted from https://spin.atomicobject.com/2016/05/28/log-bash-history/
+	[[ -d "${HOME}/.bash_logs" ]] && mkdir -p ${HOME}/.bash_logs
+	local OUTPUT_FILE="${HOME}/.bash_logs/bash-history-$(date "+%Y-%m-%d").log"
+	# history -a "${OUTPUT_FILE}"  # append history (list) from session to file
+	# history -c                   # clear history list
+	# history -r "${OUTPUT_FILE}"  # read history file and append to history list
+	if [[ "$(id -u)" -ne 0 ]]
+	then 
+		echo "$(history 1)" >> "${OUTPUT_FILE}"
+		history-add "$(history 1)"
+	fi
+	#history -s "$(history 1)"
 
+}
+
+export PROMPT_COMMAND="history-store;$PROMPT_COMMAND"
 function l33t() {
 	echo "${1}" | tr -t 'aeio' '4310'
 }
@@ -129,6 +146,16 @@ function new-go() {
 function get-ip-for() {
 	local iface="${1:-wlp2s0}"
         ip addr show dev "${iface}" | grep -Po "inet \K[0-9\.]+"
+}
+
+function encode-file() {
+	local input_filename="${1}"
+	openssl aes-256-cbc -salt -pbkdf2 -in "${input_filename}" | base64 --wrap 0 # > "${input_filename}".enc
+}
+
+function decode-file() {
+	local input_filename="${1}"
+	base64 -d "${input_filename}" | openssl aes-256-cbc -salt -pbkdf2 -in - -d # -out "${input_filename}".out
 }
 
 PATH=${PATH}:/var/lib/snapd/snap/bin

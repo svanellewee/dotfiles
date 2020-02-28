@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+mkdir -p ~/.bash_logs
+HISTORY_DB="${1:-${HOME}/.bash_logs/history.db}"
+function history-init() {
+	sqlite3 "${HISTORY_DB}" <<- "EOF"
+	CREATE TABLE IF NOT EXISTS entry (entry_id INTEGER, time TIMESTAMP, VALUE VARCHAR);
+	EOF
+}
+
+function history-add() {
+	local value="${*}"
+	local num="$(echo "${value}" | grep -P "[ \t]+\K[0-9]+" -o)"
+	local therest="$(echo "${value}" | cut -d' ' -f3-)"
+	sqlite3 "${HISTORY_DB}" <<- EOF
+	INSERT INTO entry(entry_id, time, value) VALUES (${num}, DATETIME(), '${therest}');
+	EOF
+}
+
+function history-list() {
+	sqlite3 "${HISTORY_DB}" <<- EOF
+	.mode csv
+	.headers on
+	SELECT entry_id, time, value FROM entry;
+	EOF
+}
+
+function history-export() {
+	sqlite3 "${HISTORY_DB}" <<- EOF
+	SELECT value FROM entry ORDER BY entry_id DESC
+	EOF
+}
+
+
+function read-shit() {
+	read -r -d '' a
+	echo "...${a}"
+}

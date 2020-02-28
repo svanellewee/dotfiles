@@ -1,4 +1,3 @@
-
 call plug#begin('~/.local/share/nvim/plugged')
  Plug 'autozimu/LanguageClient-neovim', {
     \ 'branch': 'next',
@@ -9,9 +8,28 @@ call plug#begin('~/.local/share/nvim/plugged')
  Plug 'junegunn/fzf'
  Plug 'sbdchd/neoformat'
  Plug 'scrooloose/nerdtree'
-
+ Plug 'Xuyuanp/nerdtree-git-plugin'
+ Plug 'vim-airline/vim-airline'
+ Plug 'vim-airline/vim-airline-themes'
+ Plug 'jiangmiao/auto-pairs'
+ Plug 'ryanoasis/vim-devicons'
+ Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() } }
 call plug#end()
 colorscheme peachpuff 
+let g:NERDTreeIndicatorMapCustom = {
+    \ "Modified"  : "✹",
+    \ "Staged"    : "✚",
+    \ "Untracked" : "✭",
+    \ "Renamed"   : "➜",
+    \ "Unmerged"  : "═",
+    \ "Deleted"   : "✖",
+    \ "Dirty"     : "✗",
+    \ "Clean"     : "✔︎",
+    \ 'Ignored'   : '☒',
+    \ "Unknown"   : "?"
+    \ }
+let g:airline#extensions#tabline#enabled = 1
+let g:airline_powerline_fonts = 1
 let g:deoplete#enable_at_startup = 1
 let g:go_highlight_fields = 1
 let g:go_highlight_types = 1
