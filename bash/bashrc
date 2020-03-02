@@ -13,6 +13,16 @@ alias gadd='git add'
 alias gstatus='git status'
 alias gtree='git log --oneline --decorate --graph'
 
+function colour-descend() {
+        local string="${1}"
+        local starting_colour="${2:-112}"                                                                                                                                                                          
+        for ((i=0; i < "${#string}"; i++))                                                                                                                                                                         
+        do                                                                                                                                                                                                         
+                x=$(( ${starting_colour} + ${i} ))                                                                                                                                                                 
+                echo  -en "\e[38;5;${x}m${string:$i:1}\e[0m"                                                                                                                                                       
+        done                                                                                                                                                                                                       
+}
+
 function gfin {
   git pull --rebase
   git rebase -i
@@ -52,6 +62,7 @@ GREEN="\e[32m"
 RED="\e[31m"
 BLUE="\e[34m"
 CYAN="\e[36m"
+MAGENTA="\e[35m"
 
 function _c() {
    echo -e "$1"
@@ -82,9 +93,20 @@ function _sve_git_branch() {
 	fi
 }
 
+function _sve_kube_context() {
+	local CONTEXT_NAME
+	CONTEXT_NAME="$(kubectl config current-context 2>/dev/null)"
+	if [[ "$?" -eq 0 ]] && [[ -n "${CONTEXT_NAME}" ]]; then
+		col=$(( $RANDOM % 255 ))
+		echo "[$(colour-descend ${CONTEXT_NAME} ${col})]"
+	else
+		echo ""
+	fi
+}
+
 # Remember to use \[ for non printing chars! 
 #  https://unix.stackexchange.com/questions/28827/why-is-my-bash-prompt-getting-bugged-when-i-browse-the-history?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
-PS1='\[$(_c "${GREEN}")\][\A]\[$(_clr)\]$(_sve_git_branch)\n\[$(_c "${CYAN}")\]\u\[$(_clr)\]:\w \$ '
+PS1='\[$(_c "${GREEN}")\][\A]\[$(_clr)\]$(_sve_git_branch)$(_sve_kube_context)\n\[$(_c "${CYAN}")\]\u\[$(_clr)\]:\w \$ '
 
 # Taken from https://www.digitalocean.com/community/tutorials/how-to-use-bash-history-commands-and-expansions-on-a-linux-vps
 HISTSIZE=5000
@@ -131,9 +153,10 @@ function new-c() {
 
 function new-go() {
 	local project_name="${1}"
+	local url="${2:-"${project_name}"}"
 	mkdir -p ./"${project_name}"
 	cd "${project_name}"
-	go mod init "${project_name}"
+	go mod init "${url}"
 	cat <<- "EOF" > ./main.go
 	package main
 	import "fmt"
