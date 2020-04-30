@@ -14,7 +14,7 @@ function history-init() {
 function history-add() {
 	local value="${*}"
 	local num="$(echo "${value}" | grep -P "[ \t]+\K[0-9]+" -o)"
-	local therest="$(echo "${value}" | cut -d' ' -f3-)"
+	local therest="$(echo "${value}" | cut -d' ' -f3- | tr "'" "\'")"
 	sqlite3 "${HISTORY_DB}" <<- EOF
 	INSERT INTO entry(entry_id, time, value) VALUES (${num}, DATETIME(), '${therest}');
 	EOF

@@ -9,6 +9,10 @@ then
 	python3 -m venv $HOME/applications/venv3
 	$HOME/applications/venv3/bin/pip install -U pip
 	$HOME/applications/venv3/bin/pip install -U datasette
+	git clone https://github.com/svanellewee/history-manager.git
+	cd history-manager
+	make
+	cp history-manager $HOME/applications/bin
 fi
 
 ln -s $HOME/dotfiles/tmux/dot.tmux.conf $HOME/.tmux.conf
@@ -23,3 +27,5 @@ else
 	echo "Upgrayedd-ing ;-)"
 	echo ${SOURCE_BASHRC} >> ~/.bashrc
 fi
+
+

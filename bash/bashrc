@@ -112,7 +112,7 @@ PS1='\[$(_c "${GREEN}")\][\A]\[$(_clr)\]$(_sve_git_branch)$(_sve_kube_context)\n
 HISTSIZE=5000
 HISTFILESIZE=10000
 #HISTTIMEFORMAT="%F %T "
-history-init
+#history-init
 function history-store() {
 	# Borrowed and adapted from https://spin.atomicobject.com/2016/05/28/log-bash-history/
 	[[ -d "${HOME}/.bash_logs" ]] && mkdir -p ${HOME}/.bash_logs
@@ -123,12 +123,13 @@ function history-store() {
 	if [[ "$(id -u)" -ne 0 ]]
 	then 
 		echo "$(history 1)" >> "${OUTPUT_FILE}"
-		history-add "$(history 1)"
+		history-manager add "$(history 1)"
 	fi
 	#history -s "$(history 1)"
 
 }
-
+alias hlist="history-manager list"
+alias hadd="history-manager add"
 export PROMPT_COMMAND="history-store;$PROMPT_COMMAND"
 function l33t() {
 	echo "${1}" | tr -t 'aeio' '4310'
@@ -181,7 +182,28 @@ function decode-file() {
 	base64 -d "${input_filename}" | openssl aes-256-cbc -salt -pbkdf2 -in - -d # -out "${input_filename}".out
 }
 
+function pIqaD() {
+	for (( cp=0xf8d0; cp<$((0xf900)); cp++)); do         Ucode="$(printf '%b' "$(printf '\\U%0*X' "$len" "$cp")")";     printf 'Unicode U%0*x = %s\n' 4 "$cp" "$Ucode"; done
+}
+
+
+function get-ips() {
+	ip addr | 
+	grep -oP "[0-9]+: \K[^:]+" |
+	(
+	while read interface
+	do  
+		ip=$(ip addr show "${interface}" 2>/dev/null | grep -Po "inet \K[0-9\.//]+")
+		if [[ "${ip}" != ""  ]]
+		then
+			echo "${interface} ${ip}"
+		fi
+	done
+        )
+}
+
 PATH=${PATH}:/var/lib/snapd/snap/bin
 PATH=${PATH}:/home/stephan/applications/venv3/bin
+PATH=${PATH}:/home/stephan/applications/bin
 ANDROID_SDK=/home/stephan/Android/Sdk/
 PATH=${PATH}:${ANDROID_SDK}/emulator:${ANDROID_SDK}/tools
