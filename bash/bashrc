@@ -166,6 +166,19 @@ function new-go() {
 	}
 	EOF
 	go fmt main.go
+	cat <<- "EOF" > ./main_test.go
+	package main_test
+	import (
+		"github.com/stretchr/testify/assert"
+		"testing"
+	)
+	func TestSomething(t *testing.T) {
+		t.Run("some test", func(t *testing.T) {
+			assert.Equal(t, 1, 0)
+		})
+	}
+	EOF
+	go fmt main_test.go
 }
 function get-ip-for() {
 	local iface="${1:-wlp2s0}"
@@ -207,3 +220,4 @@ PATH=${PATH}:/home/stephan/applications/venv3/bin
 PATH=${PATH}:/home/stephan/applications/bin
 ANDROID_SDK=/home/stephan/Android/Sdk/
 PATH=${PATH}:${ANDROID_SDK}/emulator:${ANDROID_SDK}/tools
+export TERM=xterm-256color
