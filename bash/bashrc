@@ -106,8 +106,7 @@ function _sve_kube_context() {
 
 # Remember to use \[ for non printing chars! 
 #  https://unix.stackexchange.com/questions/28827/why-is-my-bash-prompt-getting-bugged-when-i-browse-the-history?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
-PS1='\[$(_c "${GREEN}")\][\A]\[$(_clr)\]$(_sve_git_branch)$(_sve_kube_context)\n\[$(_c "${CYAN}")\]\u\[$(_clr)\]:\w \$ '
-
+PS1='\[$(_c "${GREEN}")\][\A]\[$(_clr)\][ \h ]$(_sve_git_branch)$(_sve_kube_context)\n\[$(_c "${CYAN}")\]\u\[$(_clr)\]:\w \$ '
 # Taken from https://www.digitalocean.com/community/tutorials/how-to-use-bash-history-commands-and-expansions-on-a-linux-vps
 HISTSIZE=5000
 HISTFILESIZE=10000
