@@ -5,7 +5,7 @@
 
 (which-function-mode)
 
-(dolist (package '(use-package magit go-mode unicode-fonts calmer-forest-theme dap-mode))
+(dolist (package '(use-package magit go-mode unicode-fonts dap-mode))
   (unless (package-installed-p package)
     (message (format "installing %s" package))
     (package-install package)))
@@ -52,6 +52,11 @@
   :ensure t
   :commands yas-minor-mode
   :hook (go-mode . yas-minor-mode))
+
+(add-to-list 'load-path "~/applications/tern/emacs/")
+(autoload 'tern-mode "tern.el" nil t)
+(add-hook 'js-mode-hook (lambda () (tern-mode t)))
+(setq exec-path (append exec-path '("/home/stephan/.nvm/versions/node/v14.3.0/bin/")))
 
 ;; (add-to-list 'load-path "~/.emacs.d/vagrant.el/")
 ;; (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
@@ -113,34 +118,23 @@
 ;; (iswitchb-mode 1) ;; obsolete my arse
 ;; (which-func-mode 1)
 
-(global-set-key (kbd "C-c c") 'comment-or-uncomment-region)
-  
+
 (global-set-key [(meta left)] 'windmove-left)
 (global-set-key [(meta right)] 'windmove-right)
 (global-set-key [(meta up)] 'windmove-up)
 (global-set-key [(meta down)] 'windmove-down)
 
- (require 'multiple-cursors)
 
-;;Then you have to set up your keybindings - multiple-cursors doesn't presume to
-;;know how you'd like them laid out. Here are some examples:
-
-;;When you have an active region that spans multiple lines, the following will
-;;add a cursor to each line:
-
-(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
-
-;;When you want to add multiple cursors not based on continuous lines, but based on
-;; keywords in the buffer, use:
-
-    (global-set-key (kbd "C->") 'mc/mark-next-like-this)
-    (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-    (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
-
-
+(defun ghoul-wrangler/forward-or-backward-sexp (&optional arg)
+  "Go to the matching parenthesis character if one is adjacent to point."
+  (interactive "^p")
+  (cond ((looking-at "\\s(") (forward-sexp arg))
+        ((looking-back "\\s)" 1) (backward-sexp arg))
+        ;; Now, try to succeed from inside of a bracket
+        ((looking-at "\\s)") (forward-char) (backward-sexp arg))
+        ((looking-back "\\s(" 1) (backward-char) (forward-sexp arg))))
 ;; (global-set-key [()] 'comment-or-uncomment-region)
-;; ;; (global-set-key (kbd "C-c c") 'comment-or-uncomment-region )
-;; ;; (global-set-key (kbd "C-c c") 'comment-or-uncomment-region )
+(global-set-key (kbd "C-c c") 'comment-or-uncomment-region )
 ;; (global-set-key (kbd "C-c c") 'comment-region )
 ;; (global-set-key (kbd "C-c u") 'uncomment-region )
 
@@ -202,17 +196,25 @@
  '(describe-char-unidata-list
    (quote
     (name old-name general-category canonical-combining-class bidi-class decomposition)))
+ '(eslint-fix-executable "/home/stephan/entersekt/automakt/node_modules/.bin/eslint")
+ '(indent-tabs-mode nil)
+ '(js-indent-level 2)
+ '(lsp-enable-file-watchers t)
+ '(lsp-file-watch-threshold 10000)
+ '(lsp-gopls-server-args nil)
  '(lsp-keymap-prefix "C-c l")
+ '(lsp-overlay-document-color-char "")
  '(package-selected-packages
    (quote
-    (feature-mode multiple-cursors windresize request protobuf-mode kubernetes rainbow-delimiters dap-mode yasnippet use-package unicode-fonts magit lsp-ui go-mode company-lsp)))
+    (telega js2-mode eslint-fix windresize dockerfile-mode yaml-mode yaml-tomato feature-mode fzf go-snippets request protobuf-mode kubernetes rainbow-delimiters dap-mode yasnippet use-package unicode-fonts magit lsp-ui go-mode company-lsp)))
  '(tool-bar-mode nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(font-lock-comment-delimiter-face ((t (:foreground "green"))))
+ '(font-lock-comment-delimiter-face ((t (:foreground "brightred"))))
+ '(font-lock-comment-face ((t (:foreground "cyan"))))
  '(rainbow-delimiters-depth-1-face ((t (:inherit rainbow-delimiters-base-face :foreground "red"))))
  '(rainbow-delimiters-depth-2-face ((t (:inherit rainbow-delimiters-base-face :foreground "green"))))
  '(rainbow-delimiters-depth-3-face ((t (:inherit rainbow-delimiters-base-face :foreground "blue"))))
@@ -221,3 +223,35 @@
  '(rainbow-delimiters-depth-6-face ((t (:inherit rainbow-delimiters-base-face :foreground "deep pink")))))
 (put 'narrow-to-region 'disabled nil)
 
+
+(defun with-face (str &rest face-plist)
+  (propertize str 'face face-plist))
+
+(defun get-git-branch-name()
+  ;; Gets branch name from `default-directory`
+  (let ((refz (with-output-to-string
+                (with-current-buffer standard-output
+                  (vc-git--out-ok "symbolic-ref" "HEAD")))))
+    (progn
+      ;;(message "[%s]" refz)
+      (string-match "^\\(refs/heads/\\)?\\(.+\\)$" refz)
+      (match-string 2 refz))))
+
+(defun shk-eshell-prompt ()
+  (let ((header-bg "#003"))
+    (concat
+     (with-face (concat (eshell/pwd) " ") :background header-bg)
+     (with-face (format-time-string "(%Y-%m-%d %H:%M) " (current-time)) :background header-bg :foreground "#888")
+     (with-face
+      (or (ignore-errors (format "(%s)" (get-git-branch-name))) "")
+      :background header-bg)
+     (with-face "\n" :background header-bg)
+     (with-face user-login-name :foreground "blue")
+     "@"
+     (with-face "localhost" :foreground "green")
+     (if (= (user-uid) 0)
+         (with-face " #" :foreground "red")
+       " $")
+     " ")))
+(setq eshell-prompt-function 'shk-eshell-prompt)
+(setq eshell-highlight-prompt nil)
